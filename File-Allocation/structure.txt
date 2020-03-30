@@ -1,0 +1,1 @@
+Contiguous-11110011111110000000-20-9-D^root/-F^root/file1.txt^file1.txt^2^0^-F^root/file2.txt^file2.txt^2^2^-F^root/file4.txt^file4.txt^2^6^-F^root/file5.txt^file5.txt^3^8^-D^root/folder6-

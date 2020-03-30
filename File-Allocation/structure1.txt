@@ -1,0 +1,1 @@
+Indexed-11111100011111111110-20-4-D^root/-F^root/file1.txt^file1.txt^2^0^1^2^-F^root/file2.txt^file2.txt^2^3^4^5^-F^root/file4.txt^file4.txt^2^9^10^11^-F^root/file5.txt^file5.txt^3^12^13^14^15^-D^root/folder6-
