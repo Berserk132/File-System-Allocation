@@ -60,18 +60,13 @@ class SpaceManagemnetIndexed{
 
     void deAllocateSpace(ArrayList<Integer> blocks, int index, int filesize){
 
-        int counter = 0;
 
         Blocks = Blocks.substring(0,index) + "0" + Blocks.substring(index + 1);
 
-        for (int  i = 0; i < DISK_SIZE; i++) {
 
-            if (counter == filesize) break;
+        for (Integer i : blocks){
 
-            if (i == blocks.get(counter)) {
-                Blocks = Blocks.substring(0, i) + "0" + Blocks.substring(i + 1);
-                counter++;
-            }
+            Blocks = Blocks.substring(0, i) + "0" + Blocks.substring(i + 1);
         }
 
         int numOfFree = 0;
@@ -107,16 +102,27 @@ public class Indexed {
 
     Directory checkPathValid(Directory start, String[] paths, int i, int size){
 
+        Directory tmp = new Directory();
+        tmp.name = "";
+
         if (paths.length == 2) return start;
 
 
         for (Directory dir: start.subDirectories) {
 
+            System.out.println(dir.name);
+
             if (paths[i].equals(dir.name)){
 
-                if (i == size && paths[i].equals(dir.name)) return dir;
 
-                checkPathValid(dir, paths, ++i, size);
+                if (i == size /*&& paths[size].equals(dir.name)*/) {
+
+                    System.out.println("I'm here");
+                    System.out.println(dir.name);
+                    return dir;
+                }
+
+                 return checkPathValid(dir, paths, ++i, size);
             }
         }
         return null;
@@ -126,12 +132,17 @@ public class Indexed {
 
         String[] names = path.split("/");
 
+
         // get the folder name
         String dirName = names[names.length - 1];
 
         // check if path exist
         Directory dir = checkPathValid(root, names, 1, names.length - 2);
 
+        /*for (int i = 0; i < names.length; i++){
+
+            System.out.println(names[i]);
+        }*/
         if (dir == null){
 
             System.out.println("There is no such Directory");
@@ -278,6 +289,32 @@ public class Indexed {
         }
     }
 
+    void DisplayDiskStatus(Directory root, int n){
+
+        for (int i = 0; i < n; i++) System.out.print(' ');
+        System.out.println("<" + root.name + ">\n");
+
+        for (FileClass file : root.files) {
+
+            for (int i = 0; i < n + 1; i++) System.out.print(' ');
+            System.out.println(file.name + " " + file.allocatedBlocks + " " + file.size + "\n");
+        }
+
+        for (Directory dir:root.subDirectories){
+
+
+            DisplayDiskStructure(dir, n + 1);
+        }
+    }
+
+    void DisplayDiskStatusSpace(){
+
+        System.out.println("Disk Size is : " + sm.DISK_SIZE);
+        System.out.println("number of Free Blocks : " + sm.nOfFreeBlocks);
+        System.out.println("Blocks : " + sm.Blocks);
+        System.out.println("Number of Allocated Blocks : " + (sm.DISK_SIZE - sm.nOfFreeBlocks));
+    }
+
     void saveToFile() throws IOException {
 
         File file = new File("structure1.txt");
@@ -370,6 +407,8 @@ public class Indexed {
                 }
             }
         }
+
+        myReader.close();
     }
 
     void importFile(FileClass file, String path){
@@ -392,9 +431,12 @@ public class Indexed {
         dir.files.add(file);
     }
 
+
+
     public static void main(String[] args) throws IOException {
 
         Indexed con = new Indexed();
+        Scanner sc = new Scanner(System.in);
 
         con.laodFromFile();
 
@@ -433,5 +475,69 @@ public class Indexed {
 
 
         //System.out.println("\n");
+
+
+
+        while (true){
+
+            System.out.println("1-Create File\n" +
+                    "2-Create Folder\n" +
+                    "3-Delete File\n" +
+                    "4-Delete Folder\n" +
+                    "5-Display Disk Status\n" +
+                    "6-Display Disk Structure\n" +
+                    "7-Exit\n");
+
+            System.out.println("Please Enter your choice : ");
+            String tmp = sc.nextLine();
+            int choice = Integer.parseInt(tmp);
+            System.out.println("Please Enter The Command : ");
+
+
+
+
+            if (choice == 1){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 2) System.out.println("Error in the command");
+                else con.createFile(arg[0],Integer.parseInt(arg[1]));
+            }
+            else if (choice == 2){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 1) System.out.println("Error in the command");
+                else con.createFolder(arg[0]);
+            }
+            else if (choice == 3){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 1) System.out.println("Error in the command");
+                else con.deleteFile(arg[0]);
+            }
+            else if (choice == 4){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 1) System.out.println("Error in the command");
+                else con.deleteFolder(arg[0]);
+            }
+            else if (choice == 5){
+
+                con.DisplayDiskStatus(con.root, 1);
+                con.DisplayDiskStatusSpace();
+            }
+            else if (choice == 6){
+
+                con.DisplayDiskStructure(con.root,1);
+            }
+            else break;
+        }
+
+        sc.close();
+        con.saveToFile();
+
     }
 }

@@ -131,7 +131,7 @@ public class Contiguous {
 
                 if (i == size && paths[i].equals(dir.name)) return dir;
 
-                checkPathValid(dir, paths, ++i, size);
+                return  checkPathValid(dir, paths, ++i, size);
             }
         }
         return null;
@@ -386,12 +386,40 @@ public class Contiguous {
                 }
             }
         }
+        myReader.close();
+    }
+
+    void DisplayDiskStatus(Directory root, int n){
+
+        for (int i = 0; i < n; i++) System.out.print(' ');
+        System.out.println("<" + root.name + ">\n");
+
+        for (FileClass file : root.files) {
+
+            for (int i = 0; i < n + 1; i++) System.out.print(' ');
+            System.out.println(file.name + " " + file.allocatedBlocks + " " + file.size + "\n");
+        }
+
+        for (Directory dir:root.subDirectories){
+
+
+            DisplayDiskStructure(dir, n + 1);
+        }
+    }
+
+    void DisplayDiskStatusSpace(){
+
+        System.out.println("Disk Size is : " + sm.DISK_SIZE);
+        System.out.println("number of Free Blocks : " + sm.nOfFreeBlocks);
+        System.out.println("Blocks : " + sm.Blocks);
+        System.out.println("Number of Allocated Blocks : " + (sm.DISK_SIZE - sm.nOfFreeBlocks));
     }
 
 
     public static void main(String[] args) throws IOException {
 
         Contiguous con = new Contiguous();
+        Scanner sc = new Scanner(System.in);
 
         con.laodFromFile();
 
@@ -431,5 +459,66 @@ public class Contiguous {
 
 
         //System.out.println("\n");
+
+        while (true){
+
+            System.out.println("1-Create File\n" +
+                    "2-Create Folder\n" +
+                    "3-Delete File\n" +
+                    "4-Delete Folder\n" +
+                    "5-Display Disk Status\n" +
+                    "6-Display Disk Structure\n" +
+                    "7-Exit\n");
+
+            System.out.println("Please Enter your choice : ");
+            String tmp = sc.nextLine();
+            int choice = Integer.parseInt(tmp);
+            System.out.println("Please Enter The Command : ");
+
+
+
+
+            if (choice == 1){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 2) System.out.println("Error in the command");
+                else con.createFile(arg[0],Integer.parseInt(arg[1]));
+            }
+            else if (choice == 2){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 1) System.out.println("Error in the command");
+                else con.createFolder(arg[0]);
+            }
+            else if (choice == 3){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 1) System.out.println("Error in the command");
+                else con.deleteFile(arg[0]);
+            }
+            else if (choice == 4){
+
+                String command = sc.nextLine();
+                String[] arg = command.split(" ");
+                if (arg.length < 1) System.out.println("Error in the command");
+                else con.deleteFolder(arg[0]);
+            }
+            else if (choice == 5){
+
+                con.DisplayDiskStatus(con.root, 1);
+                con.DisplayDiskStatusSpace();
+            }
+            else if (choice == 6){
+
+                con.DisplayDiskStructure(con.root,1);
+            }
+            else break;
+        }
+
+        sc.close();
+        con.saveToFile();
     }
 }
